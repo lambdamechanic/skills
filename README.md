@@ -5,13 +5,6 @@ Overview
 - Each skill lives at `<folder>/SKILL.md` (top‑level) with YAML front‑matter (`name`, `description`) followed by guidance and examples.
 - Intended for use with the `sk` tool to discover, install, and manage skills per project.
 
-Sources
-- Seeded from three local repos in this workspace:
-  - `../sk/skills/*`
-  - `../dumbwaiter/skills/*`
-  - `../isura` (none found today)
-- If multiple repos contain a skill with the same name, we merge them. When there are conflicts, the version from `sk` takes precedence.
-
 Using With sk
 - sk repo: https://github.com/lambdamechanic/sk
 - Install a skill from this repo after you publish it (example installs the `bd` skill):
