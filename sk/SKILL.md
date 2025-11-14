@@ -42,6 +42,7 @@ description: "How to use the repo-scoped sk CLI to manage Claude Skills in this 
      - `Auto-merge skipped…` appears when checks can’t be armed (e.g., required approvals disabled); click through and finish by hand.
    - When `gh` is missing or unauthenticated you’ll see “Skipping PR automation …”; install/auth and rerun `sk sync-back` to finish the upload.
    - Automation currently uses GitHub’s standard `--merge` strategy; if your repo enforces `--squash`/`--rebase`, turn off auto-merge in the UI and land it manually after review.
+   - If your PR output says `enablePullRequestAutoMerge`, run `gh repo edit <owner>/<repo> --enable-auto-merge` (or visit the repo’s Settings → General page) once to flip the toggle.
 5. **Publish a brand-new skill** that doesn’t exist upstream yet:
    ```bash
    target/debug/sk sync-back <name> \
