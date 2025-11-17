@@ -16,6 +16,7 @@ Use this skill whenever you touch delivery end-to-end—from grabbing a bd issue
 6. **Close the Loop** – sync bd/dcos, close the issue, and record proof the change stuck.
 
 ## 1. Select & Claim the bd Task
+- If `.beads/beads.db` is missing (fresh clone, new worktree, etc.), run `bd init --json` from the repo root so the local database hydrates from `.beads/issues.jsonl` before listing work.
 - You may be handed a task: if so, choose that one. Otherwise, run `bd ready --json -n 0` before asking for work; respect blockers/dependencies, pick the first ready task and claim it. `bd update <id> --status in_progress --notes "Starting work on ${task description}"`.
 - Commit the issues.jsonl changes immediately on main and push. This avoids multiple agents pulling the same task. If you get a conflict, revert the issues.jsonl changes, pull with rebase, and try again.
 - Read the issue (and linked docs) end-to-end. Confirm acceptance criteria, implicit contracts, and dependent tasks. It is possible it is in a partially complete state: if so, pick up where it was left off.
