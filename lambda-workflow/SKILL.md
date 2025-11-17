@@ -18,7 +18,7 @@ Use this skill whenever you touch delivery end-to-end—from grabbing a bd issue
 ## 1. Select & Claim the bd Task
 - You may be handed a task: if so, choose that one. Otherwise, run `bd ready --json -n 0` before asking for work; respect blockers/dependencies, pick the first ready task and claim it. `bd update <id> --status in_progress --notes "Starting work on ${task description}"`.
 - Commit the issues.jsonl changes immediately on main and push. This avoids multiple agents pulling the same task. If you get a conflict, revert the issues.jsonl changes, pull with rebase, and try again.
-- Read the issue (and linked docs) end-to-end. Confirm acceptance criteria, implicit contracts, and dependent tasks.
+- Read the issue (and linked docs) end-to-end. Confirm acceptance criteria, implicit contracts, and dependent tasks. It is possible it is in a partially complete state: if so, pick up where it was left off.
 - Clarify gaps before coding. Update the bd ticket with questions or new discoveries so history lives in `.beads/issues.jsonl`. Again, push these changes (and only these changes) directly to main.
 
 ## 2. Kick Off & Draft the PR
@@ -43,6 +43,7 @@ Use this skill whenever you touch delivery end-to-end—from grabbing a bd issue
   3. Fix the bug in a follow-up commit, push, and reply to the review thread with the fixing hash/summary.
 - Strip debug aids (`dbg!`, `println!`, temporary flags) before moving to landing.
 - For transactional upgrade/apply loops, add coverage that proves: atomic rollback on failure, lockfile sync after success, cross-device safety (rename EXDEV), and symlink preservation.
+- You will commonly discover unexpected tasks while building; if they are directly necessary for the success of this task, add a bd subtask blocking this task and work on it first, on the same PR. If they are not, add them as discovered-from tasks in bd and continue, they can be done in the next round.
 
 ## 4. Land the Plane (Ready for Review)
 1. **Quality gates**
