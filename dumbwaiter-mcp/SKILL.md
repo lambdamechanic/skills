@@ -11,7 +11,7 @@ Prerequisites
 - Server: this repo builds a stdio MCP server (`cargo build && target/debug/dumbwaiter-mcp`).
 - Auth: `export GITHUB_TOKEN=…` (repo read permissions are sufficient for commit statuses).
 - Persistence (optional): `DUMBWAITER_DB` to override `./state/dumbwaiter.sqlite`.
-- Await settings (optional): `DUMBWAITER_AWAIT_TTL_SECS` (default 900), `DUMBWAITER_WATCHER=1` to enable background polling.
+- Await settings (optional): `DUMBWAITER_AWAIT_TTL_SECS` (default 900), `DUMBWAITER_ENGINE=1` to enable the background engine (legacy alias `DUMBWAITER_WATCHER=1` still works).
 
 When to use this skill
 - You need to pause orchestration until PR checks turn green, a PR is merged, or checks fail.
