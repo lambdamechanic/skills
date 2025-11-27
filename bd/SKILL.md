@@ -36,7 +36,7 @@ Always run bd with `--json`. Pipe/parse as needed.
 2. **Claim** the task: `bd update <id> --status in_progress --json` (add notes if relevant).
 3. **Implement / test / document** the change.
 4. **Discover new work?** Create a linked issue (e.g., `bd create "Fix follow-up" -p 1 --deps discovered-from:<parent> --json`).
-5. **Complete** the task via `bd close <id> --reason "Completed" --json` when the PR merges.
+5. **Complete** the task as soon as you believe the acceptance criteria are met and you have pushed non-interim commits (draft PRs included). Run `bd close <id> --reason "Completed" --json` at that point; merge or green CI is *not* required. If CI later fails or review feedback arrives, flip back to `in_progress`, address it, and close again once satisfied.
 6. **Commit `.beads/issues.jsonl` alongside code.** Never leave tracker changes uncommitted.
 
 ## Auto-Sync Behavior
