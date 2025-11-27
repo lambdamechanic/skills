@@ -1,6 +1,6 @@
 ---
 name: starting-the-task
-description: A short checklist for kicking off work effectively: plan, branch, track with bd, and set up validation.
+description: "A short checklist for kicking off work effectively: plan, branch, track with bd, and set up validation."
 ---
 
 # Starting the Task
