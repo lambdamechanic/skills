@@ -1,6 +1,6 @@
 ---
 name: lambda-workflow
-description: One lifecycle for Lambda repos: choose a bd task, start work, land the PR, and watch GitHub via Dumbwaiter MCP until it merges.
+description: "One lifecycle for Lambda repos: choose a bd task, start work, land the PR, and watch GitHub via Dumbwaiter MCP until it merges."
 ---
 
 # Lambda Workflow
