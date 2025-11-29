@@ -43,6 +43,7 @@ Always run bd with `--json`. Pipe/parse as needed.
 
 - bd exports to `.beads/issues.jsonl` automatically (5s debounce) after changes.
 - After `git pull`, bd imports newer JSONL back into the local state. No manual sync needed.
+- If a merge conflict touches `.beads/*.jsonl`, prefer `git merge` (not rebase) so the custom `merge=beads` driver can resolve cleanly; avoid rewriting history that would replay bd edits and create duplicate entries.
 
 ## MCP Integration (Optional)
 
