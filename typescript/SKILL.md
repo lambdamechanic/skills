@@ -1,6 +1,6 @@
 ---
 name: typescript
-description: Default TypeScript stack for Lambda: pnpm workspaces + Turbo, strict TS, and sensible DX helpers.
+description: "Default TypeScript stack for Lambda: pnpm workspaces + Turbo, strict TS, and sensible DX helpers."
 ---
 
 # TypeScript Skill (pnpm + Turbo by default)
