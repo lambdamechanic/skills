@@ -7,10 +7,10 @@ Overview
 
 Using With sk
 - sk repo: https://github.com/lambdamechanic/sk
-- Install a skill from this repo after you publish it (example installs the `bd` skill):
-  - `sk install lambdamechanic/skills --path bd`
+- Install a skill from this repo after you publish it (example installs the `bd-workflow` skill):
+  - `sk install lambdamechanic/skills --path bd-workflow`
 - For local testing without publishing, point sk at this folder:
-  - `sk install file://$PWD --path bd`
+  - `sk install file://$PWD --path bd-workflow`
 
 Format Reference
 - Anthropic’s canonical format and expectations are documented in their skills repo:
@@ -20,3 +20,4 @@ Maintenance
 - Add new skills as `<folder>/SKILL.md` (top‑level directory per skill).
 - Keep front‑matter current; use clear, actionable guidance in the body.
 - Avoid duplication—prefer updating an existing skill over creating a near‑duplicate.
+- Run `make test` to ensure skill frontmatter matches its folder name (CI runs the same check).
