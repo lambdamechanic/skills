@@ -34,7 +34,8 @@ Use this skill whenever you touch delivery end-to-end—from grabbing a bd issue
    - Verify `gh auth status` (or equivalent) so PR automation works later.
 3. **Immediate draft PR**
    - Push the branch and open a **draft** PR sourced from the bd summary/acceptance criteria, including any questions or underspecified areas.
-   - Preferred helper: `gh pr create --draft --title "..." --body-file body.md`. Be wary of quoting issues, it's easy to end up with "\n" characters in the PR.
+   - Preferred helper: `gh pr create --draft --title "..." --body-file body.md`. Be wary of quoting issues; avoid inline strings for multi-line bodies or comments.
+   - When writing PR bodies or GitHub comments, use a temp file or a heredoc to keep newlines unquoted, then pass it via `--body-file` (e.g., `cat <<'EOF' > /tmp/gh-body.md` ... `EOF`).
    - Capture acceptance criteria + planned tests in the PR body so reviewers know how you’ll prove success.
 4. **Plan validation**
    - Decide which automated + manual tests will prove the work. Note the plan in bd or the PR so it is reviewable before implementation.
