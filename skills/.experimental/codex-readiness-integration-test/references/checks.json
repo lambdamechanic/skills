@@ -19,8 +19,8 @@
     },
     {
       "id": "exec_plan_before_code_changes",
-      "title": "P0: ExecPlan created before code changes",
-      "description": "ExecPlan file update appears before any non-doc, non-.codex file changes.",
+      "title": "P0: Planning signal before code changes",
+      "description": "A planning signal (for example: update_plan or \"Plan:\") appears in agentic.log before any non-doc, non-.codex file changes.",
       "priority": 0,
       "weight": null,
       "type": "DETERMINISTIC",
@@ -28,6 +28,23 @@
       "execute_required": true,
       "evaluator_prompt_id": null,
       "deterministic_rule_id": "exec_plan_before_code_changes",
+      "deterministic_rule_params": {
+        "prompt_path": "prompt.json",
+        "agentic_log_path": "logs/agentic.log"
+      },
+      "enabled_by_default": true
+    },
+    {
+      "id": "verification_after_code_changes",
+      "title": "P0: Verification after code changes",
+      "description": "A build, test, or lint verification command appears in agentic.log after the first non-doc, non-.codex file change.",
+      "priority": 0,
+      "weight": null,
+      "type": "DETERMINISTIC",
+      "scope": "run_dir",
+      "execute_required": true,
+      "evaluator_prompt_id": null,
+      "deterministic_rule_id": "verification_after_code_changes",
       "deterministic_rule_params": {
         "prompt_path": "prompt.json",
         "agentic_log_path": "logs/agentic.log"
