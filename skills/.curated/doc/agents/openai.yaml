@@ -1,0 +1,9 @@
+interface:
+  display_name: "Word Docs"
+  short_description: "Edit and review docx files"
+  icon_small: "./assets/doc-small.svg"
+  icon_large: "./assets/doc.png"
+
+ownership:
+  name: "Codex Team"
+  url: "https://openai.com/codex/"
