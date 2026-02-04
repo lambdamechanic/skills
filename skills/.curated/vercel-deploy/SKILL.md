@@ -28,7 +28,14 @@ If that fails with "No existing credentials found", use the fallback method belo
 If CLI fails with auth error, use the deploy script:
 
 ```bash
-./scripts/deploy.sh [path]
+# Deploy current directory
+bash scripts/deploy.sh
+
+# Deploy specific project
+bash scripts/deploy.sh /path/to/project
+
+# Deploy existing tarball
+bash scripts/deploy.sh /path/to/project.tgz
 ```
 
 The script handles framework detection, packaging, and deployment. It waits for the build to complete and returns JSON with `previewUrl` and `claimUrl`.
