@@ -1,0 +1,7 @@
+interface:
+  display_name: "Monitor Zyte Ops"
+  short_description: "Operate Monitor Zyte jobs and settings safely"
+  default_prompt: "Use $monitor-zyte-ops to handle a Monitor Zyte staging or production operation safely."
+
+policy:
+  allow_implicit_invocation: true
