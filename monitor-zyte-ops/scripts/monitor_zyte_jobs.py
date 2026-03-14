@@ -164,7 +164,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    run_parser = subparsers.add_parser("run", help="Schedule a job through run.json.")
+    run_parser = subparsers.add_parser(
+        "run",
+        help="Schedule a job through run.json (mutating, but not approval-gated by itself).",
+    )
     add_target_arguments(run_parser)
     run_parser.add_argument("--spider", help="Spider name.")
     run_parser.add_argument("--jobq-id", type=int, help="Optional spider id.")
@@ -184,7 +187,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Repeatable spider argument KEY=VALUE.",
     )
 
-    list_parser = subparsers.add_parser("list", help="List jobs as mappings.")
+    list_parser = subparsers.add_parser(
+        "list", help="List jobs as mappings (read-only inspection)."
+    )
     add_target_arguments(list_parser)
     list_parser.add_argument("--job", help="Optional full job ref.")
     list_parser.add_argument("--spider", help="Optional spider name.")
@@ -195,7 +200,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name in ("stop", "delete"):
         command_parser = subparsers.add_parser(
-            name, help=f"{name.title()} one or more jobs."
+            name,
+            help=(
+                "Stop one or more jobs (mutating, non-persistent)."
+                if name == "stop"
+                else "Delete one or more jobs (destructive, approval-gated)."
+            ),
         )
         command_parser.add_argument(
             "--job",
@@ -205,7 +215,9 @@ def build_parser() -> argparse.ArgumentParser:
         )
 
     for name in ("items", "logs", "requests"):
-        command_parser = subparsers.add_parser(name, help=f"Fetch {name} for a job.")
+        command_parser = subparsers.add_parser(
+            name, help=f"Fetch {name} for a job (read-only inspection)."
+        )
         command_parser.add_argument(
             "--job", required=True, help="Full job ref like 831071/7/123."
         )
