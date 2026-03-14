@@ -38,15 +38,37 @@ Surface rules
 - Persistent settings and periodic-job edits are dashboard work, not `shub` work.
 - Scrapy Cloud listing responses are dict-shaped mappings. Use keyed lookups, not object methods.
 
+Operation triage
+
+- Classify the requested action before deciding whether approval is needed.
+- `read-only inspection`:
+  - target resolution
+  - job listing and job-detail lookups
+  - items, logs, and requests retrieval
+  - `shub log`, `shub items`, and other dashboard/API reads that do not change Zyte state
+- `ephemeral job control`:
+  - deploys
+  - ad hoc runs or schedules
+  - stopping an in-flight job
+  - other one-off runtime actions that do not persist project or spider configuration
+- `destructive or persistent mutation`:
+  - delete operations
+  - durable spider or project settings edits
+  - periodic-job edits
+  - Raw Settings writes
+  - any other action that deletes data or persists configuration in Zyte
+
 Approval rules
 
-- Before any persistent settings edit or delete operation, summarize:
+- Read-only inspection never needs approval. Fetching details about existing runs is always read-only.
+- For ephemeral job control, do not ask for a second approval when the user already asked for that concrete action. If the target or impact is ambiguous, stop and clarify instead of guessing.
+- Before any destructive or persistent mutation, summarize:
   - target environment and project id
   - object being changed or deleted
   - exact mutation
   - surface being used
 - Wait for explicit user approval in-thread before proceeding.
-- Do not treat an ambiguous request as approval for a production write.
+- Do not treat an ambiguous request as approval for a destructive action or a production write.
 
 Validation rules
 
