@@ -7,7 +7,7 @@ metadata:
 
 # Skill Installer
 
-Helps install skills. By default these are from https://github.com/openai/skills/tree/main/skills/.curated, but users can also provide other locations.
+Helps install skills. By default these are from https://github.com/openai/skills/tree/main/skills/.curated, but users can also provide other locations. Experimental skills live in https://github.com/openai/skills/tree/main/skills/.experimental and can be installed the same way.
 
 Use the helper scripts based on the task:
 - List skills when the user asks what is available, or if the user uses this skill without specifying what to do. Default listing is `.curated`, but you can pass `--path skills/.experimental` when they ask about experimental skills.
@@ -44,10 +44,18 @@ All of these scripts use network, so when running in the sandbox, request escala
 
 - Defaults to direct download for public GitHub repos.
 - If download fails with auth/permission errors, falls back to git sparse checkout.
-- Aborts if the destination skill directory already exists.
 - Installs into `$CODEX_HOME/skills/<skill-name>` (defaults to `~/.codex/skills`).
 - Multiple `--path` values install multiple skills in one run, each named from the path basename unless `--name` is supplied.
 - Options: `--ref <ref>` (default `main`), `--dest <path>`, `--method auto|download|git`.
+
+### Handling Existing Skills
+
+When a skill directory already exists, the default behavior is to warn and skip it. Use these flags to control behavior:
+
+- `--force`: Overwrite existing skill directories with the downloaded version. Prints a warning for each overwritten skill.
+- `--keep-existing`: Skip skills that already exist without warning, keeping the local version. Useful for bulk installs where you want to add only new skills.
+
+These flags are mutually exclusive.
 
 ## Notes
 

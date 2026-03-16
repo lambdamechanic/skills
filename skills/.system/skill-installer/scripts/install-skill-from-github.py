@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import os
 import shutil
 import subprocess
@@ -27,6 +27,8 @@ class Args:
     dest: str | None = None
     name: str | None = None
     method: str = "auto"
+    force: bool = False
+    keep_existing: bool = False
 
 
 @dataclass
@@ -169,10 +171,13 @@ def _validate_skill(path: str) -> None:
         raise InstallError("SKILL.md not found in selected skill directory.")
 
 
-def _copy_skill(src: str, dest_dir: str) -> None:
+def _copy_skill(src: str, dest_dir: str, force: bool = False) -> None:
     os.makedirs(os.path.dirname(dest_dir), exist_ok=True)
     if os.path.exists(dest_dir):
-        raise InstallError(f"Destination already exists: {dest_dir}")
+        if force:
+            shutil.rmtree(dest_dir)
+        else:
+            raise InstallError(f"Destination already exists: {dest_dir}")
     shutil.copytree(src, dest_dir)
 
 
@@ -263,11 +268,26 @@ def _parse_args(argv: list[str]) -> Args:
         choices=["auto", "download", "git"],
         default="auto",
     )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing skill directory if it exists",
+    )
+    parser.add_argument(
+        "--keep-existing",
+        action="store_true",
+        help="Skip skills that already exist (keep local version)",
+    )
     return parser.parse_args(argv, namespace=Args())
 
 
 def main(argv: list[str]) -> int:
     args = _parse_args(argv)
+    
+    if args.force and args.keep_existing:
+        print("Error: --force and --keep-existing are mutually exclusive", file=sys.stderr)
+        return 1
+    
     try:
         source = _resolve_source(args)
         source.ref = source.ref or args.ref
@@ -280,6 +300,7 @@ def main(argv: list[str]) -> int:
         try:
             repo_root = _prepare_repo(source, args.method, tmp_dir)
             installed = []
+            skipped = []
             for path in source.paths:
                 skill_name = args.name if len(source.paths) == 1 else None
                 skill_name = skill_name or os.path.basename(path.rstrip("/"))
@@ -287,17 +308,32 @@ def main(argv: list[str]) -> int:
                 if not skill_name:
                     raise InstallError("Unable to derive skill name.")
                 dest_dir = os.path.join(dest_root, skill_name)
+                
                 if os.path.exists(dest_dir):
-                    raise InstallError(f"Destination already exists: {dest_dir}")
+                    if args.keep_existing:
+                        print(f"Skipping {skill_name} (already exists, keeping local version)")
+                        skipped.append(skill_name)
+                        continue
+                    elif args.force:
+                        print(f"Warning: Overwriting existing {skill_name}")
+                    else:
+                        print(f"Warning: {skill_name} already exists at {dest_dir}", file=sys.stderr)
+                        print("  Use --force to overwrite or --keep-existing to skip", file=sys.stderr)
+                        skipped.append(skill_name)
+                        continue
+                
                 skill_src = os.path.join(repo_root, path)
                 _validate_skill(skill_src)
-                _copy_skill(skill_src, dest_dir)
+                _copy_skill(skill_src, dest_dir, force=args.force)
                 installed.append((skill_name, dest_dir))
         finally:
             if os.path.isdir(tmp_dir):
                 shutil.rmtree(tmp_dir, ignore_errors=True)
         for skill_name, dest_dir in installed:
             print(f"Installed {skill_name} to {dest_dir}")
+        if skipped and not installed:
+            print(f"No skills installed ({len(skipped)} skipped)")
+            return 0
         return 0
     except InstallError as exc:
         print(f"Error: {exc}", file=sys.stderr)
