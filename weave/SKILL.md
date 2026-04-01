@@ -73,9 +73,8 @@ If the user does not want to modify tracked repo files, configure the merge driv
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-git_dir="$(git rev-parse --git-dir)"
-info_attributes="$git_dir/info/attributes"
-mkdir -p "$git_dir/info"
+info_attributes="$(git rev-parse --git-path info/attributes)"
+mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 if ! grep -q '[[:space:]]merge=weave$' "$info_attributes" 2>/dev/null; then
@@ -103,8 +102,7 @@ To remove a local-only setup later:
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-git_dir="$(git rev-parse --git-dir)"
-info_attributes="$git_dir/info/attributes"
+info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
@@ -202,8 +200,7 @@ Useful checks
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-git_dir="$(git rev-parse --git-dir)"
-info_attributes="$git_dir/info/attributes"
+info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --get merge.weave.driver
 grep -H '[[:space:]]merge=weave$' "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
