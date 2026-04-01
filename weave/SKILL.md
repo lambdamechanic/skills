@@ -21,7 +21,8 @@ Start with:
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
+cd "$repo_root"
+info_attributes="$(git rev-parse --git-path info/attributes)"
 command -v weave
 command -v weave-driver
 printf '%s\n' "$repo_root" "$info_attributes"
@@ -69,8 +70,8 @@ If the user does not want to modify tracked repo files, configure the merge driv
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
 cd "$repo_root"
+info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
@@ -109,7 +110,7 @@ git cherry-pick --abort
 
 ```bash
 git merge BRANCH
-git rebase UPSTREAM
+git rebase BRANCH
 git cherry-pick COMMIT_OR_RANGE
 ```
 
@@ -142,7 +143,8 @@ Useful checks
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
+cd "$repo_root"
+info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --get merge.weave.driver
 grep -H "merge=weave" "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
