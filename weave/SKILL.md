@@ -9,12 +9,13 @@ Use this skill when the user wants to use `weave` to reduce or resolve Git merge
 
 Core rules
 
+- Do not turn this skill into an installation guide. Focus on using `weave` to preview merges and resolve conflicts.
 - Do not install `weave` or change merge configuration unless the user asked for that outcome.
 - `weave setup` edits repo-local Git config and `.gitattributes`. If the user only wants a personal or temporary setup, prefer `.git/info/attributes`.
 - Use `weave` to eliminate false conflicts on independent edits. If `weave` still leaves conflict markers, treat them as real semantic conflicts and resolve them carefully.
 - `weave` is for supported text files. Unsupported types, binary files, and large files fall back to ordinary line-based merge behavior.
 
-Preflight
+Confirm `weave` is available
 
 Start with:
 
@@ -25,20 +26,7 @@ git rev-parse --show-toplevel
 git status --short
 ```
 
-If `weave` is not installed, the upstream install path is:
-
-```bash
-brew install weave
-```
-
-Or build from the upstream repo with:
-
-```bash
-git clone https://github.com/Ataraxy-Labs/weave.git
-cd weave
-cargo install --path crates/weave-cli
-cargo install --path crates/weave-driver
-```
+If `weave` or `weave-driver` is missing, stop and say so clearly. Only discuss installation if the user explicitly asks for it.
 
 Preview first
 
@@ -76,6 +64,7 @@ Local-only setup
 If the user does not want to modify tracked repo files, configure the merge driver in local Git config and add only the needed patterns to `.git/info/attributes`:
 
 ```bash
+mkdir -p .git/info
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 printf '%s\n' \
@@ -104,6 +93,8 @@ If Git already produced ordinary conflict markers before `weave` was configured,
 
 ```bash
 git merge --abort
+git rebase --abort
+git cherry-pick --abort
 ```
 
 3. Configure `weave`.
@@ -142,7 +133,7 @@ Useful checks
 
 ```bash
 git config --get merge.weave.driver
-rg "merge=weave" .gitattributes .git/info/attributes
+rg "merge=weave" .gitattributes .git/info/attributes 2>/dev/null
 ```
 
 What `weave` is good at
