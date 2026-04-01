@@ -75,8 +75,8 @@ repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
-git config --local merge.weave.name "Entity-level semantic merge"
-git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
+git config --local --replace-all merge.weave.name "Entity-level semantic merge"
+git config --local --replace-all merge.weave.driver "weave-driver %O %A %B %L %P"
 for pattern in \
   '*.ts' \
   '*.tsx' \
@@ -90,8 +90,9 @@ for pattern in \
   '*.toml' \
   '*.md'
 do
-  pattern_re="$(printf '%s\n' "$pattern" | sed 's/[][(){}.^$?+*|\\/]/\\&/g')"
+  pattern_re="$(printf '%s\n' "$pattern" | sed 's:[][(){}.^$?+*|\\/]:\\&:g')"
   if ! grep -qE "^${pattern_re}[[:space:]].*merge=weave([[:space:]]|$)" "$info_attributes" 2>/dev/null; then
+    test -f "$info_attributes" && [ -n "$(tail -c1 "$info_attributes" 2>/dev/null)" ] && echo "" >> "$info_attributes"
     printf '%s merge=weave\n' "$pattern" >> "$info_attributes"
   fi
 done
