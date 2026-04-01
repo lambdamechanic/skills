@@ -77,22 +77,24 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
-if ! grep -q '[[:space:]]merge=weave$' "$info_attributes" 2>/dev/null; then
-  cat <<'EOF' >> "$info_attributes"
-
-*.ts merge=weave
-*.tsx merge=weave
-*.js merge=weave
-*.py merge=weave
-*.go merge=weave
-*.rs merge=weave
-*.json merge=weave
-*.yaml merge=weave
-*.yml merge=weave
-*.toml merge=weave
-*.md merge=weave
-EOF
-fi
+for pattern in \
+  '*.ts' \
+  '*.tsx' \
+  '*.js' \
+  '*.py' \
+  '*.go' \
+  '*.rs' \
+  '*.json' \
+  '*.yaml' \
+  '*.yml' \
+  '*.toml' \
+  '*.md'
+do
+  pattern_re="$(printf '%s\n' "$pattern" | sed 's/[][(){}.^$?+*|\\/]/\\&/g')"
+  if ! grep -qE "^${pattern_re}[[:space:]].*merge=weave([[:space:]]|$)" "$info_attributes" 2>/dev/null; then
+    printf '%s merge=weave\n' "$pattern" >> "$info_attributes"
+  fi
+done
 ```
 
 Add other patterns only when the repo needs them. `weave setup` handles the broader upstream-supported set automatically.
@@ -107,11 +109,14 @@ git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
-  awk '!/[[:space:]]merge=weave$/' "$info_attributes" > "$tmp_attributes"
-  if test -s "$tmp_attributes"; then
-    mv "$tmp_attributes" "$info_attributes"
+  if awk '!/[[:space:]]merge=weave([[:space:]]|$)/' "$info_attributes" > "$tmp_attributes"; then
+    if test -s "$tmp_attributes"; then
+      mv "$tmp_attributes" "$info_attributes"
+    else
+      rm -f "$info_attributes" "$tmp_attributes"
+    fi
   else
-    rm -f "$info_attributes" "$tmp_attributes"
+    rm -f "$tmp_attributes"
   fi
 fi
 ```
@@ -202,7 +207,7 @@ repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --get merge.weave.driver
-grep -H '[[:space:]]merge=weave$' "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
+grep -H -E '[[:space:]]merge=weave([[:space:]]|$)' "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
 
 What `weave` is good at
