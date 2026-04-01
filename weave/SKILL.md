@@ -64,11 +64,11 @@ cd "$(git rev-parse --show-toplevel)"
 weave unsetup
 ```
 
-`weave unsetup` only reverts the repo-wide changes from `weave setup`. For a local-only cleanup, use the removal steps below.
+`weave unsetup` only reverts the repo-wide changes from `weave setup`. It does not remove the local `merge.weave.*` config or `.git/info/attributes` entries from the local-only flow below.
 
 Local-only setup
 
-If the user does not want to modify tracked repo files, configure the merge driver in local Git config and add only the needed patterns to `.git/info/attributes`:
+If the user does not want to modify tracked repo files, start from the repo root, configure the merge driver in local Git config, and add only the needed patterns to `.git/info/attributes`:
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
@@ -126,7 +126,7 @@ Resolving an already-conflicted merge
 If Git already produced ordinary conflict markers before `weave` was configured, the clean path is:
 
 1. Inspect whether aborting is safe. Do not throw away user edits.
-2. Abort the operation if that is acceptable:
+2. Abort the operation if that is acceptable. Choose exactly one command that matches the active operation:
 
 For a merge:
 
@@ -176,7 +176,9 @@ weave summary path/to/file
 weave summary path/to/file --json
 ```
 
-This gives structured conflict context such as entity name, kind, and hint text. Resolve those markers manually, then continue with standard Git commands:
+This gives structured conflict context such as entity name, kind, and hint text. Resolve those markers manually, then continue with standard Git commands.
+
+Choose exactly one continue command that matches the active operation:
 
 ```bash
 git add path/to/file
