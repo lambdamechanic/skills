@@ -75,7 +75,8 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
-cat <<'EOF' >> "$info_attributes"
+if ! grep -q 'merge=weave' "$info_attributes" 2>/dev/null; then
+  cat <<'EOF' >> "$info_attributes"
 
 *.ts merge=weave
 *.tsx merge=weave
@@ -89,6 +90,7 @@ cat <<'EOF' >> "$info_attributes"
 *.toml merge=weave
 *.md merge=weave
 EOF
+fi
 ```
 
 Add other patterns only when the repo needs them. `weave setup` handles the broader upstream-supported set automatically.
@@ -116,8 +118,11 @@ If Git already produced ordinary conflict markers before `weave` was configured,
 2. Abort the operation if that is acceptable:
 
 ```bash
+# Choose the command that matches the current operation:
 git merge --abort
+# or:
 git rebase --abort
+# or:
 git cherry-pick --abort
 ```
 
@@ -145,13 +150,11 @@ This gives structured conflict context such as entity name, kind, and hint text.
 
 ```bash
 git add path/to/file
+# Then choose the command that matches the current operation:
 git merge --continue
-```
-
-Or:
-
-```bash
+# or:
 git rebase --continue
+# or:
 git cherry-pick --continue
 ```
 
