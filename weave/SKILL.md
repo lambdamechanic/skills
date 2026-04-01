@@ -75,7 +75,7 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
-if ! grep -q 'merge=weave' "$info_attributes" 2>/dev/null; then
+if ! grep -q '[[:space:]]merge=weave$' "$info_attributes" 2>/dev/null; then
   cat <<'EOF' >> "$info_attributes"
 
 *.ts merge=weave
@@ -104,8 +104,16 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
-  grep -v 'merge=weave' "$info_attributes" > "$info_attributes.tmp" || true
-  mv "$info_attributes.tmp" "$info_attributes"
+  tmp_attributes="$(mktemp)"
+  if grep -v '[[:space:]]merge=weave$' "$info_attributes" > "$tmp_attributes"; then
+    mv "$tmp_attributes" "$info_attributes"
+  elif [ $? -eq 1 ]; then
+    : > "$tmp_attributes"
+    mv "$tmp_attributes" "$info_attributes"
+  else
+    rm -f "$tmp_attributes"
+    exit 1
+  fi
   test -s "$info_attributes" || rm -f "$info_attributes"
 fi
 ```
@@ -165,7 +173,7 @@ repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --get merge.weave.driver
-grep -H "merge=weave" "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
+grep -H '[[:space:]]merge=weave$' "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
 
 What `weave` is good at
