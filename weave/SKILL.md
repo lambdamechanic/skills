@@ -92,7 +92,9 @@ for pattern in \
 do
   pattern_re="$(printf '%s\n' "$pattern" | sed 's:[][(){}.^$?+*|\\/]:\\&:g')"
   if ! grep -qE "^${pattern_re}[[:space:]].*merge=weave([[:space:]]|$)" "$info_attributes" 2>/dev/null; then
-    test -f "$info_attributes" && [ -n "$(tail -c1 "$info_attributes" 2>/dev/null)" ] && echo "" >> "$info_attributes"
+    if test -f "$info_attributes" && [ -n "$(tail -c1 "$info_attributes" 2>/dev/null)" ]; then
+      printf '\n' >> "$info_attributes"
+    fi
     printf '%s merge=weave\n' "$pattern" >> "$info_attributes"
   fi
 done
@@ -112,7 +114,8 @@ if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
   if awk '!/[[:space:]]merge=weave([[:space:]]|$)/' "$info_attributes" > "$tmp_attributes"; then
     if test -s "$tmp_attributes"; then
-      mv "$tmp_attributes" "$info_attributes"
+      cat "$tmp_attributes" > "$info_attributes"
+      rm -f "$tmp_attributes"
     else
       rm -f "$info_attributes" "$tmp_attributes"
     fi
