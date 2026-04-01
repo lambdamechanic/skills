@@ -75,22 +75,38 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
-printf '%s\n' \
-  '*.ts merge=weave' \
-  '*.tsx merge=weave' \
-  '*.js merge=weave' \
-  '*.py merge=weave' \
-  '*.go merge=weave' \
-  '*.rs merge=weave' \
-  '*.json merge=weave' \
-  '*.yaml merge=weave' \
-  '*.yml merge=weave' \
-  '*.toml merge=weave' \
-  '*.md merge=weave' \
-  >> "$info_attributes"
+cat <<'EOF' >> "$info_attributes"
+
+*.ts merge=weave
+*.tsx merge=weave
+*.js merge=weave
+*.py merge=weave
+*.go merge=weave
+*.rs merge=weave
+*.json merge=weave
+*.yaml merge=weave
+*.yml merge=weave
+*.toml merge=weave
+*.md merge=weave
+EOF
 ```
 
 Add other patterns only when the repo needs them. `weave setup` handles the broader upstream-supported set automatically.
+
+To remove a local-only setup later:
+
+```bash
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+info_attributes="$(git rev-parse --git-path info/attributes)"
+git config --local --unset-all merge.weave.name || true
+git config --local --unset-all merge.weave.driver || true
+if test -f "$info_attributes"; then
+  grep -v 'merge=weave' "$info_attributes" > "$info_attributes.tmp" || true
+  mv "$info_attributes.tmp" "$info_attributes"
+  test -s "$info_attributes" || rm -f "$info_attributes"
+fi
+```
 
 Resolving an already-conflicted merge
 
