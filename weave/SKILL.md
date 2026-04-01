@@ -115,19 +115,19 @@ if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
   if awk '
     /^[[:space:]]*#/ || /^[[:space:]]*$/ { print; next }
-    {
-      line = $0
-      if (!gsub(/[[:space:]]merge=weave([[:space:]]|$)/, " ", line)) {
-        print
-        next
-      }
-      gsub(/[[:space:]]+/, " ", line)
-      sub(/^[[:space:]]+/, "", line)
-      sub(/[[:space:]]+$/, "", line)
-      if (line ~ /[[:space:]]/) {
-        print line
-      }
-    }
+    $0 == "*.ts merge=weave" { next }
+    $0 == "*.tsx merge=weave" { next }
+    $0 == "*.js merge=weave" { next }
+    $0 == "*.jsx merge=weave" { next }
+    $0 == "*.py merge=weave" { next }
+    $0 == "*.go merge=weave" { next }
+    $0 == "*.rs merge=weave" { next }
+    $0 == "*.json merge=weave" { next }
+    $0 == "*.yaml merge=weave" { next }
+    $0 == "*.yml merge=weave" { next }
+    $0 == "*.toml merge=weave" { next }
+    $0 == "*.md merge=weave" { next }
+    { print }
   ' "$info_attributes" > "$tmp_attributes"; then
     if test -s "$tmp_attributes"; then
       cat "$tmp_attributes" > "$info_attributes" && rm -f "$tmp_attributes"
@@ -139,6 +139,8 @@ if test -f "$info_attributes"; then
   fi
 fi
 ```
+
+This cleanup only removes the exact lines added by the local-only setup snippet above. It leaves any other local attribute rules unchanged, even if they also mention `merge=weave`.
 
 Resolving an already-conflicted merge
 
