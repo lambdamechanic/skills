@@ -115,18 +115,7 @@ if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
   if awk '
     /^[[:space:]]*#/ || /^[[:space:]]*$/ { print; next }
-    $0 == "*.ts merge=weave" { next }
-    $0 == "*.tsx merge=weave" { next }
-    $0 == "*.js merge=weave" { next }
-    $0 == "*.jsx merge=weave" { next }
-    $0 == "*.py merge=weave" { next }
-    $0 == "*.go merge=weave" { next }
-    $0 == "*.rs merge=weave" { next }
-    $0 == "*.json merge=weave" { next }
-    $0 == "*.yaml merge=weave" { next }
-    $0 == "*.yml merge=weave" { next }
-    $0 == "*.toml merge=weave" { next }
-    $0 == "*.md merge=weave" { next }
+    $0 ~ /^\*\.(ts|tsx|js|jsx|py|go|rs|json|yaml|yml|toml|md) merge=weave$/ { next }
     { print }
   ' "$info_attributes" > "$tmp_attributes"; then
     if test -s "$tmp_attributes"; then
