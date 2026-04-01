@@ -81,6 +81,7 @@ for pattern in \
   '*.ts' \
   '*.tsx' \
   '*.js' \
+  '*.jsx' \
   '*.py' \
   '*.go' \
   '*.rs' \
@@ -112,10 +113,9 @@ git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
-  if awk '!/[[:space:]]merge=weave([[:space:]]|$)/' "$info_attributes" > "$tmp_attributes"; then
+  if awk '!/^[^#]*[[:space:]]merge=weave([[:space:]]|$)/' "$info_attributes" > "$tmp_attributes"; then
     if test -s "$tmp_attributes"; then
-      cat "$tmp_attributes" > "$info_attributes"
-      rm -f "$tmp_attributes"
+      cat "$tmp_attributes" > "$info_attributes" && rm -f "$tmp_attributes"
     else
       rm -f "$info_attributes" "$tmp_attributes"
     fi
