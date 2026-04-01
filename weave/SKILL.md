@@ -1,16 +1,14 @@
 ---
 name: weave
-description: Use Ataraxy Labs' weave semantic merge driver to preview merges, configure Git to use weave for supported files, and resolve Git merge conflicts with entity-level context instead of line-based conflict markers.
+description: Use `weave`, the semantic merge driver to preview merges, configure Git to use weave for supported files, and resolve Git merge conflicts with entity-level context instead of line-based conflict markers.
 ---
 
 # weave
 
-Use this skill when the user wants to use `weave` to reduce or resolve Git merge conflicts, preview whether a merge will be clean, or interpret weave conflict markers.
+Use this skill when you encounter Git merge conflicts, want to preview whether a merge will be clean, or must interpret weave conflict markers.
 
 Core rules
 
-- Do not turn this skill into an installation guide. Focus on using `weave` to preview merges and resolve conflicts.
-- Do not install `weave` or change merge configuration unless the user asked for that outcome.
 - `weave setup` edits repo-local Git config and `.gitattributes`. If the user only wants a personal or temporary setup, prefer `.git/info/attributes`.
 - Use `weave` to eliminate false conflicts on independent edits. If `weave` still leaves conflict markers, treat them as real semantic conflicts and resolve them carefully.
 - `weave` is for supported text files. Unsupported types, binary files, and large files fall back to ordinary line-based merge behavior.
@@ -114,91 +112,15 @@ rm -f "$tmp_attributes"
 
 Add other patterns only when the repo needs them. `weave setup` handles the broader upstream-supported set automatically.
 
-To remove a local-only setup later:
-
-```bash
-repo_root="$(git rev-parse --show-toplevel)"
-cd "$repo_root"
-info_attributes="$(git rev-parse --git-path info/attributes)"
-git config --local --unset-all merge.weave.name || true
-git config --local --unset-all merge.weave.driver || true
-if test -f "$info_attributes"; then
-  tmp_attributes="$(mktemp "${TMPDIR:-/tmp}/weave-local-only-cleanup.XXXXXX")"
-  if awk '
-    $0 == "# added by weave local-only setup" { skipping = 1; next }
-    $0 == "# end weave local-only setup" { skipping = 0; next }
-    !skipping { print }
-  ' "$info_attributes" > "$tmp_attributes"; then
-    if test -s "$tmp_attributes"; then
-      cat "$tmp_attributes" > "$info_attributes" && rm -f "$tmp_attributes"
-    else
-      rm -f "$info_attributes" "$tmp_attributes"
-    fi
-  else
-    rm -f "$tmp_attributes"
-  fi
-fi
-```
-
-This cleanup only removes the marked block added by the local-only setup snippet above. It leaves any other local attribute rules unchanged, even if they also mention `merge=weave`.
-
 Resolving an already-conflicted merge
 
 If Git already produced ordinary conflict markers before `weave` was configured, the clean path is:
 
 1. Inspect whether aborting is safe. Do not throw away user edits.
-2. Abort the operation if that is acceptable. Choose exactly one command that matches the active operation:
-
-For a merge:
-
-```bash
-git merge --abort
-```
-
-For a rebase:
-
-```bash
-git rebase --abort
-```
-
-For a cherry-pick:
-
-```bash
-git cherry-pick --abort
-```
-
-For a revert:
-
-```bash
-git revert --abort
-```
-
+2. Abort the operation if that is acceptable.
 3. Configure `weave`.
 4. Restart the same kind of operation:
 
-For a merge:
-
-```bash
-git merge BRANCH
-```
-
-For a rebase:
-
-```bash
-git rebase BRANCH
-```
-
-For a cherry-pick:
-
-```bash
-git cherry-pick COMMIT_OR_RANGE
-```
-
-For a revert:
-
-```bash
-git revert COMMIT_OR_RANGE
-```
 
 Handling remaining weave conflicts
 
@@ -210,36 +132,6 @@ weave summary path/to/file --json
 ```
 
 This gives structured conflict context such as entity name, kind, and hint text. Resolve those markers manually, then continue with standard Git commands.
-
-Choose exactly one continue command that matches the active operation:
-
-```bash
-git add path/to/file
-```
-
-Continue a merge with:
-
-```bash
-git merge --continue
-```
-
-Continue a rebase with:
-
-```bash
-git rebase --continue
-```
-
-Continue a cherry-pick with:
-
-```bash
-git cherry-pick --continue
-```
-
-Continue a revert with:
-
-```bash
-git revert --continue
-```
 
 Useful checks
 
