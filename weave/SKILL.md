@@ -20,9 +20,11 @@ Confirm `weave` is available
 Start with:
 
 ```bash
+repo_root="$(git rev-parse --show-toplevel)"
+git_dir="$(git rev-parse --git-dir)"
 command -v weave
 command -v weave-driver
-git rev-parse --show-toplevel
+printf '%s\n' "$repo_root" "$git_dir"
 git status --short
 ```
 
@@ -48,6 +50,7 @@ Preferred Git setup
 For a repo-wide setup:
 
 ```bash
+cd "$(git rev-parse --show-toplevel)"
 weave setup
 ```
 
@@ -56,6 +59,7 @@ This configures `merge.weave.*` in Git and adds `merge=weave` patterns to `.gita
 To remove it later:
 
 ```bash
+cd "$(git rev-parse --show-toplevel)"
 weave unsetup
 ```
 
@@ -64,7 +68,10 @@ Local-only setup
 If the user does not want to modify tracked repo files, configure the merge driver in local Git config and add only the needed patterns to `.git/info/attributes`:
 
 ```bash
-mkdir -p .git/info
+repo_root="$(git rev-parse --show-toplevel)"
+git_dir="$(git rev-parse --git-dir)"
+cd "$repo_root"
+mkdir -p "$git_dir/info"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 printf '%s\n' \
@@ -79,7 +86,7 @@ printf '%s\n' \
   '*.yml merge=weave' \
   '*.toml merge=weave' \
   '*.md merge=weave' \
-  >> .git/info/attributes
+  >> "$git_dir/info/attributes"
 ```
 
 Add other patterns only when the repo needs them. Upstream support also includes Java, C/C++, Ruby, C#, PHP, Swift, Elixir, Bash, XML, and more.
@@ -132,8 +139,10 @@ git cherry-pick --continue
 Useful checks
 
 ```bash
+repo_root="$(git rev-parse --show-toplevel)"
+git_dir="$(git rev-parse --git-dir)"
 git config --get merge.weave.driver
-rg "merge=weave" .gitattributes .git/info/attributes 2>/dev/null
+grep -H "merge=weave" "$repo_root/.gitattributes" "$git_dir/info/attributes" 2>/dev/null
 ```
 
 What `weave` is good at
