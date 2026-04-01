@@ -64,6 +64,8 @@ cd "$(git rev-parse --show-toplevel)"
 weave unsetup
 ```
 
+`weave unsetup` only reverts the repo-wide changes from `weave setup`. For a local-only cleanup, use the removal steps below.
+
 Local-only setup
 
 If the user does not want to modify tracked repo files, configure the merge driver in local Git config and add only the needed patterns to `.git/info/attributes`:
@@ -71,8 +73,9 @@ If the user does not want to modify tracked repo files, configure the merge driv
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-info_attributes="$(git rev-parse --git-path info/attributes)"
-mkdir -p "$(dirname "$info_attributes")"
+git_dir="$(git rev-parse --git-dir)"
+info_attributes="$git_dir/info/attributes"
+mkdir -p "$git_dir/info"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 if ! grep -q '[[:space:]]merge=weave$' "$info_attributes" 2>/dev/null; then
@@ -100,7 +103,8 @@ To remove a local-only setup later:
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-info_attributes="$(git rev-parse --git-path info/attributes)"
+git_dir="$(git rev-parse --git-dir)"
+info_attributes="$git_dir/info/attributes"
 git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
@@ -121,25 +125,44 @@ If Git already produced ordinary conflict markers before `weave` was configured,
 1. Inspect whether aborting is safe. Do not throw away user edits.
 2. Abort the operation if that is acceptable:
 
+For a merge:
+
 ```bash
-# Choose the command that matches the current operation:
 git merge --abort
-# or:
+```
+
+For a rebase:
+
+```bash
 git rebase --abort
-# or:
+```
+
+For a cherry-pick:
+
+```bash
 git cherry-pick --abort
 ```
 
 3. Configure `weave`.
 4. Restart the same kind of operation:
 
+For a merge:
+
 ```bash
 git merge BRANCH
-git rebase BRANCH
-git cherry-pick COMMIT_OR_RANGE
 ```
 
-Use the command that matches the operation you aborted.
+For a rebase:
+
+```bash
+git rebase BRANCH
+```
+
+For a cherry-pick:
+
+```bash
+git cherry-pick COMMIT_OR_RANGE
+```
 
 Handling remaining weave conflicts
 
@@ -154,11 +177,23 @@ This gives structured conflict context such as entity name, kind, and hint text.
 
 ```bash
 git add path/to/file
-# Then choose the command that matches the current operation:
+```
+
+Continue a merge with:
+
+```bash
 git merge --continue
-# or:
+```
+
+Continue a rebase with:
+
+```bash
 git rebase --continue
-# or:
+```
+
+Continue a cherry-pick with:
+
+```bash
 git cherry-pick --continue
 ```
 
@@ -167,7 +202,8 @@ Useful checks
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
-info_attributes="$(git rev-parse --git-path info/attributes)"
+git_dir="$(git rev-parse --git-dir)"
+info_attributes="$git_dir/info/attributes"
 git config --get merge.weave.driver
 grep -H '[[:space:]]merge=weave$' "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
