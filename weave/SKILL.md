@@ -34,6 +34,8 @@ brew install weave
 Or build from the upstream repo with:
 
 ```bash
+git clone https://github.com/Ataraxy-Labs/weave.git
+cd weave
 cargo install --path crates/weave-cli
 cargo install --path crates/weave-driver
 ```
@@ -74,8 +76,8 @@ Local-only setup
 If the user does not want to modify tracked repo files, configure the merge driver in local Git config and add only the needed patterns to `.git/info/attributes`:
 
 ```bash
-git config merge.weave.name "Entity-level semantic merge"
-git config merge.weave.driver "weave-driver %O %A %B %L %P"
+git config --local merge.weave.name "Entity-level semantic merge"
+git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 printf '%s\n' \
   '*.ts merge=weave' \
   '*.tsx merge=weave' \
