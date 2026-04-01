@@ -21,10 +21,10 @@ Start with:
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-git_dir="$(git rev-parse --git-dir)"
+info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
 command -v weave
 command -v weave-driver
-printf '%s\n' "$repo_root" "$git_dir"
+printf '%s\n' "$repo_root" "$info_attributes"
 git status --short
 ```
 
@@ -69,9 +69,9 @@ If the user does not want to modify tracked repo files, configure the merge driv
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-git_dir="$(git rev-parse --git-dir)"
+info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
 cd "$repo_root"
-mkdir -p "$git_dir/info"
+mkdir -p "$(dirname "$info_attributes")"
 git config --local merge.weave.name "Entity-level semantic merge"
 git config --local merge.weave.driver "weave-driver %O %A %B %L %P"
 printf '%s\n' \
@@ -86,10 +86,10 @@ printf '%s\n' \
   '*.yml merge=weave' \
   '*.toml merge=weave' \
   '*.md merge=weave' \
-  >> "$git_dir/info/attributes"
+  >> "$info_attributes"
 ```
 
-Add other patterns only when the repo needs them. Upstream support also includes Java, C/C++, Ruby, C#, PHP, Swift, Elixir, Bash, XML, and more.
+Add other patterns only when the repo needs them. `weave setup` handles the broader upstream-supported set automatically.
 
 Resolving an already-conflicted merge
 
@@ -142,9 +142,9 @@ Useful checks
 
 ```bash
 repo_root="$(git rev-parse --show-toplevel)"
-git_dir="$(git rev-parse --git-dir)"
+info_attributes="$(git rev-parse --path-format=absolute --git-path info/attributes)"
 git config --get merge.weave.driver
-grep -H "merge=weave" "$repo_root/.gitattributes" "$git_dir/info/attributes" 2>/dev/null
+grep -H "merge=weave" "$repo_root/.gitattributes" "$info_attributes" 2>/dev/null
 ```
 
 What `weave` is good at
