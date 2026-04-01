@@ -105,16 +105,12 @@ git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
   tmp_attributes="$(mktemp)"
-  if grep -v '[[:space:]]merge=weave$' "$info_attributes" > "$tmp_attributes"; then
-    mv "$tmp_attributes" "$info_attributes"
-  elif [ $? -eq 1 ]; then
-    : > "$tmp_attributes"
+  awk '!/[[:space:]]merge=weave$/' "$info_attributes" > "$tmp_attributes"
+  if test -s "$tmp_attributes"; then
     mv "$tmp_attributes" "$info_attributes"
   else
-    rm -f "$tmp_attributes"
-    exit 1
+    rm -f "$info_attributes" "$tmp_attributes"
   fi
-  test -s "$info_attributes" || rm -f "$info_attributes"
 fi
 ```
 
