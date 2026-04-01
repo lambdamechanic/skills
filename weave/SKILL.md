@@ -165,6 +165,12 @@ For a cherry-pick:
 git cherry-pick --abort
 ```
 
+For a revert:
+
+```bash
+git revert --abort
+```
+
 3. Configure `weave`.
 4. Restart the same kind of operation:
 
@@ -184,6 +190,12 @@ For a cherry-pick:
 
 ```bash
 git cherry-pick COMMIT_OR_RANGE
+```
+
+For a revert:
+
+```bash
+git revert COMMIT_OR_RANGE
 ```
 
 Handling remaining weave conflicts
@@ -219,6 +231,12 @@ Continue a cherry-pick with:
 
 ```bash
 git cherry-pick --continue
+```
+
+Continue a revert with:
+
+```bash
+git revert --continue
 ```
 
 Useful checks
