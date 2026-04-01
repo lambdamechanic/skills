@@ -79,7 +79,7 @@ git config --local --replace-all merge.weave.name "Entity-level semantic merge"
 git config --local --replace-all merge.weave.driver "weave-driver %O %A %B %L %P"
 marker_begin="# added by weave local-only setup"
 marker_end="# end weave local-only setup"
-tmp_attributes="$(mktemp)"
+tmp_attributes="$(mktemp "${TMPDIR:-/tmp}/weave-local-only-setup.XXXXXX")"
 for pattern in \
   '*.ts' \
   '*.tsx' \
@@ -123,7 +123,7 @@ info_attributes="$(git rev-parse --git-path info/attributes)"
 git config --local --unset-all merge.weave.name || true
 git config --local --unset-all merge.weave.driver || true
 if test -f "$info_attributes"; then
-  tmp_attributes="$(mktemp)"
+  tmp_attributes="$(mktemp "${TMPDIR:-/tmp}/weave-local-only-cleanup.XXXXXX")"
   if awk '
     $0 == "# added by weave local-only setup" { skipping = 1; next }
     $0 == "# end weave local-only setup" { skipping = 0; next }
