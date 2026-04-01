@@ -105,13 +105,15 @@ git cherry-pick --abort
 ```
 
 3. Configure `weave`.
-4. Re-run the merge:
+4. Restart the same kind of operation:
 
 ```bash
 git merge BRANCH
+git rebase UPSTREAM
+git cherry-pick COMMIT_OR_RANGE
 ```
 
-Use the equivalent abort and continue commands for rebases or cherry-picks.
+Use the command that matches the operation you aborted.
 
 Handling remaining weave conflicts
 
