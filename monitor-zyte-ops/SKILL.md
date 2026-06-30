@@ -16,12 +16,29 @@ Use cases
 - Validating whether a crawl really succeeded
 - Routing fetch/proxy diagnosis to the existing `fetch-test-spider` workflow
 
+Locating the bundled scripts
+
+The scripts named below live in this skill's `scripts/` directory, but its location
+varies by checkout: most repos keep the skill under `.agents/skills/`, while some
+worktrees use `skills/`. Resolve it from the git root instead of guessing a relative
+path. Because these shells do not persist environment between commands, include the
+two `SCRIPTS=` lines in the same command block whenever you invoke a bundled script:
+
+```
+SCRIPTS="$(git rev-parse --show-toplevel)/.agents/skills/monitor-zyte-ops/scripts"
+[ -d "$SCRIPTS" ] || SCRIPTS="$(git rev-parse --show-toplevel)/skills/monitor-zyte-ops/scripts"
+uv run python "$SCRIPTS/monitor_zyte_jobs.py" --pretty list
+```
+
+Do not use bare `scripts/...`, `skills/...`, or `../skills/...` paths — they fail
+because the skill is not at a fixed location relative to your working directory.
+
 Start here
 
-1. Resolve the target first with `scripts/resolve_monitor_zyte_target.py staging|production`.
+1. Resolve the target first: `uv run python "$SCRIPTS/resolve_monitor_zyte_target.py" staging|production` (resolve `$SCRIPTS` as above).
 2. Choose the surface:
    - `shub` for deploys, ad hoc runs, log tails, quick manual item export, and image operations
-   - `scripts/monitor_zyte_jobs.py` for machine-friendly `run`, `list`, `stop`, `delete`, `items`, `logs`, and `requests`
+   - `monitor_zyte_jobs.py` for machine-friendly `run`, `list`, `stop`, `delete`, `items`, `logs`, and `requests`
    - `playwright-cli` for persistent dashboard-only edits such as Raw Settings and periodic jobs
 3. Stop immediately if a required dependency is unavailable.
 
